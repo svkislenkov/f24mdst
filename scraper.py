@@ -112,7 +112,7 @@ f = open("id.txt", "r")
 seen_ids = set(f.read().splitlines())
 
 submission_data = []
-for submission in reddit.subreddit("AITAH").hot(limit=10):
+for submission in reddit.subreddit("controversialopinions").hot(limit=50):
     # print("test")
     cleaned_title = clean_text(submission.title)
     cleaned_selftext = clean_text(submission.selftext)
@@ -132,7 +132,9 @@ for submission in reddit.subreddit("AITAH").hot(limit=10):
         "score": submission.score,
         "ups?": submission.ups,
         "url": submission.url,
-        "created_utc": submission.created_utc
+        "created_utc": submission.created_utc,
+        "subreddit": submission.subreddit.display_name,
+        # add comments field
     })
 
 
