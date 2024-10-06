@@ -2,12 +2,17 @@ import praw
 from praw.models import MoreComments
 import json
 import pprint
+import os
+from dotenv import load_dotenv, dotenv_values
 
-from keys import CLIENT_ID, CLIENT_SECRET
+load_dotenv()
+
+print(os.getenv("CLIENT_ID"))
+print(os.getenv("CLIENT_SECRET"))
 
 reddit = praw.Reddit(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
+    client_id=os.getenv("CLIENT_ID"),
+    client_secret=os.getenv("CLIENT_SECRET"),
     user_agent="My User",
 )
 
