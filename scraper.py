@@ -95,7 +95,7 @@ f = open("id.txt", "r")
 seen_ids = set(f.read().splitlines())
 
 submission_data = []
-for submission in reddit.subreddit("controversialopinions").top(time_filter="month", limit=200):
+for submission in reddit.subreddit("controversialopinions").top(time_filter="month", limit=500):
     
     if submission.id in seen_ids:
         continue
