@@ -94,43 +94,132 @@ reddit = praw.Reddit(
 f = open("id.txt", "r")
 seen_ids = set(f.read().splitlines())
 
-submission_data = []
-for submission in reddit.subreddit("controversialopinions").top(time_filter="month", limit=500):
-    
-    if submission.id in seen_ids:
-        continue
-    else:
-        seen_ids.add(submission.id)
-        with open("id.txt", "a") as f:
-            f.write(submission.id + "\n")
+def get_data():
+    with open('reddits.txt', 'r') as f:
+        reddits = f.read().splitlines()
 
-    submission_data.append({
-        "id": submission.id,
-        "url": submission.url,
-        "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
-        "subreddit": submission.subreddit.display_name,
-        "cleaned_title": clean_text(submission.title),
-        "cleaned selftext": clean_text(submission.selftext),
-        "num_comments": submission.num_comments,
-        "num_base_level_comments": len(submission.comments),
-        "score": submission.score, # upvotes - downvotes
-        "upvote_ratio": submission.upvote_ratio, # upvotes ratio
-        "original_title": submission.title,
-        "original_selftext": submission.selftext
-    })
+    print(reddits)
 
+    for r in reddits:
+        print(f'Getting data for {r}')
 
-# saving data 
-if os.path.exists('tdata.json'):
-    with open('tdata.json', 'r') as json_file:
-        try:
-            existing_posts = json.load(json_file)
-        except:
+        submission_data = []
+        
+        # top month posts
+        for submission in reddit.subreddit(r).top(time_filter="month", limit=500):
+            
+            if submission.id in seen_ids:
+                continue
+            else:
+                seen_ids.add(submission.id)
+                with open("id.txt", "a") as f:
+                    f.write(submission.id + "\n")
+
+            submission_data.append({
+                "id": submission.id,
+                "url": submission.url,
+                "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
+                "subreddit": submission.subreddit.display_name,
+                "cleaned_title": clean_text(submission.title),
+                "cleaned selftext": clean_text(submission.selftext),
+                "num_comments": submission.num_comments,
+                "num_base_level_comments": len(submission.comments),
+                "score": submission.score, # upvotes - downvotes
+                "upvote_ratio": submission.upvote_ratio, # upvotes ratio
+                "original_title": submission.title,
+                "original_selftext": submission.selftext
+            })
+        # saving data 
+        if os.path.exists('tdata.json'):
+            with open('tdata.json', 'r') as json_file:
+                try:
+                    existing_posts = json.load(json_file)
+                except:
+                    existing_posts = []
+        else:
             existing_posts = []
-else:
-    existing_posts = []
 
-existing_posts.extend(submission_data)            
+        existing_posts.extend(submission_data)            
 
-with open('tdata.json', 'w') as json_file:
-    json.dump(existing_posts, json_file, indent=4)
+        with open('tdata.json', 'w') as json_file:
+            json.dump(existing_posts, json_file, indent=4)
+        # top year posts
+        for submission in reddit.subreddit(r).top(time_filter="year", limit=500):
+            
+            if submission.id in seen_ids:
+                continue
+            else:
+                seen_ids.add(submission.id)
+                with open("id.txt", "a") as f:
+                    f.write(submission.id + "\n")
+
+            submission_data.append({
+                "id": submission.id,
+                "url": submission.url,
+                "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
+                "subreddit": submission.subreddit.display_name,
+                "cleaned_title": clean_text(submission.title),
+                "cleaned selftext": clean_text(submission.selftext),
+                "num_comments": submission.num_comments,
+                "num_base_level_comments": len(submission.comments),
+                "score": submission.score, # upvotes - downvotes
+                "upvote_ratio": submission.upvote_ratio, # upvotes ratio
+                "original_title": submission.title,
+                "original_selftext": submission.selftext
+            })
+        # saving data 
+        if os.path.exists('tdata.json'):
+            with open('tdata.json', 'r') as json_file:
+                try:
+                    existing_posts = json.load(json_file)
+                except:
+                    existing_posts = []
+        else:
+            existing_posts = []
+
+        existing_posts.extend(submission_data)            
+
+        with open('tdata.json', 'w') as json_file:
+            json.dump(existing_posts, json_file, indent=4)
+            
+        # hot posts
+        for submission in reddit.subreddit(r).hot(limit=500):
+            
+            if submission.id in seen_ids:
+                continue
+            else:
+                seen_ids.add(submission.id)
+                with open("id.txt", "a") as f:
+                    f.write(submission.id + "\n")
+
+            submission_data.append({
+                "id": submission.id,
+                "url": submission.url,
+                "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
+                "subreddit": submission.subreddit.display_name,
+                "cleaned_title": clean_text(submission.title),
+                "cleaned selftext": clean_text(submission.selftext),
+                "num_comments": submission.num_comments,
+                "num_base_level_comments": len(submission.comments),
+                "score": submission.score, # upvotes - downvotes
+                "upvote_ratio": submission.upvote_ratio, # upvotes ratio
+                "original_title": submission.title,
+                "original_selftext": submission.selftext
+            })
+        
+        # saving data 
+        if os.path.exists('tdata.json'):
+            with open('tdata.json', 'r') as json_file:
+                try:
+                    existing_posts = json.load(json_file)
+                except:
+                    existing_posts = []
+        else:
+            existing_posts = []
+
+        existing_posts.extend(submission_data)            
+
+        with open('tdata.json', 'w') as json_file:
+            json.dump(existing_posts, json_file, indent=4)
+
+get_data()
