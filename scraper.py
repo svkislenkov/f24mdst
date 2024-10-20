@@ -7,40 +7,13 @@ from dotenv import load_dotenv, dotenv_values
 import nltk
 from nltk.corpus import stopwords
 import re
+from datetime import datetime
 
 
-
+# loading in client secrets
 load_dotenv()
 
-# print(os.getenv("CLIENT_ID"))
-# print(os.getenv("CLIENT_SECRET"))
-
-def expand_contractions(text):
-    def replace(match):
-        return CONTRADICTIONS[match.group(0)]
-    return contractions_re.sub(replace, text)
-
-def clean_text(text):
-    text = text.lower()
-    text = expand_contractions(text)
-    text = re.sub(r'[^\w\s]', '', text)
-    text = re.sub(r'\d+', '', text)
-    text = ' '.join([word for word in text.split() if word.lower() not in STOPWORDS])
-    stop_words = r'\b(?:a|an|the|is|it|of|and|to|in)\b'
-    text = re.sub(stop_words, '', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    
-    return text
-
-reddit = praw.Reddit(
-    client_id=os.getenv("CLIENT_ID"),
-    client_secret=os.getenv("CLIENT_SECRET"),
-    user_agent="My User",
-)
-
-# nltk.download('stopwords')
-STOPWORDS = set(stopwords.words('english'))
-
+# used to expand contractions
 CONTRADICTIONS = {
     "aren't": "are not",
     "can't": "cannot",
@@ -95,8 +68,11 @@ def expand_contractions(text):
         return CONTRADICTIONS[match.group(0)]
     return contractions_re.sub(replace, text)
 
+# if needed: nltk.download('stopwords')
+STOPWORDS = set(stopwords.words('english'))
+
+# cleaning text
 def clean_text(text):
-    
     text = text.lower()
     text = expand_contractions(text)
     text = re.sub(r'[^\w\s]', '', text)
@@ -105,17 +81,21 @@ def clean_text(text):
     stop_words = r'\b(?:a|an|the|is|it|of|and|to|in)\b'
     text = re.sub(stop_words, '', text)
     text = re.sub(r'\s+', ' ', text).strip()
-    
     return text
 
+# opening reddit instance
+reddit = praw.Reddit(
+    client_id=os.getenv("CLIENT_ID"),
+    client_secret=os.getenv("CLIENT_SECRET"),
+    user_agent="My User",
+)
+
+# opening the id file
 f = open("id.txt", "r")
 seen_ids = set(f.read().splitlines())
 
 submission_data = []
-for submission in reddit.subreddit("controversialopinions").hot(limit=50):
-    # print("test")
-    cleaned_title = clean_text(submission.title)
-    cleaned_selftext = clean_text(submission.selftext)
+for submission in reddit.subreddit("controversialopinions").top(time_filter="month", limit=200):
     
     if submission.id in seen_ids:
         continue
@@ -126,18 +106,21 @@ for submission in reddit.subreddit("controversialopinions").hot(limit=50):
 
     submission_data.append({
         "id": submission.id,
-        "title": submission.title,
-        "author": str(submission.author),  # Convert the Redditor object to string
-        "selftext": submission.selftext,
-        "score": submission.score,
-        "ups?": submission.ups,
         "url": submission.url,
-        "created_utc": submission.created_utc,
+        "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
         "subreddit": submission.subreddit.display_name,
-        # add comments field
+        "cleaned_title": clean_text(submission.title),
+        "cleaned selftext": clean_text(submission.selftext),
+        "num_comments": submission.num_comments,
+        "num_base_level_comments": len(submission.comments),
+        "score": submission.score, # upvotes - downvotes
+        "upvote_ratio": submission.upvote_ratio, # upvotes ratio
+        "original_title": submission.title,
+        "original_selftext": submission.selftext
     })
 
 
+# saving data 
 if os.path.exists('tdata.json'):
     with open('tdata.json', 'r') as json_file:
         try:
@@ -147,12 +130,7 @@ if os.path.exists('tdata.json'):
 else:
     existing_posts = []
 
-# for post in existing_posts:
-#     print(post.title)
-
 existing_posts.extend(submission_data)            
-    
+
 with open('tdata.json', 'w') as json_file:
     json.dump(existing_posts, json_file, indent=4)
-
-

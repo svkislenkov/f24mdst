@@ -2,14 +2,6 @@ Program for reading from r/unpopularopinion, r/the10thdentist, r/trueunpopularop
 
 Develops a model for predicting which opinions are unpopular, which topics are likely to be controversial, etc.
 
-Important Fields:
-1. title
-2. comments
-3. num_comments
-4. selftext
-5. id
-6. url
-
-TODO:
-1. Flatten comment tree- only consider outer layer of comments- not commment replies
-2. Create set 
+Sub-Reddits:
+    1. unpopularopinion
+    2. controversialopinion
