@@ -14,7 +14,7 @@ from datetime import datetime
 load_dotenv()
 
 # used to expand contractions
-CONTRADICTIONS = {
+CONTRACTIONS = {
     "aren't": "are not",
     "can't": "cannot",
     "couldn't": "could not",
@@ -61,11 +61,11 @@ CONTRADICTIONS = {
     "you've": "you have"
 }
 
-contractions_re = re.compile('(%s)' % '|'.join(CONTRADICTIONS.keys()))
+contractions_re = re.compile('(%s)' % '|'.join(CONTRACTIONS.keys()))
 
 def expand_contractions(text):
     def replace(match):
-        return CONTRADICTIONS[match.group(0)]
+        return CONTRACTIONS[match.group(0)]
     return contractions_re.sub(replace, text)
 
 # if needed: nltk.download('stopwords')
@@ -198,7 +198,7 @@ def get_data():
                 "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
                 "subreddit": submission.subreddit.display_name,
                 "cleaned_title": clean_text(submission.title),
-                "cleaned selftext": clean_text(submission.selftext),
+                "cleaned_selftext": clean_text(submission.selftext),
                 "num_comments": submission.num_comments,
                 "num_base_level_comments": len(submission.comments),
                 "score": submission.score, # upvotes - downvotes
