@@ -11761,10 +11761,6 @@ Hi (link:  https://www.reddit.com/r/controversialopinion/comments/9e9efx/hi/ )
 I think you mean this sub (link:  https://www.reddit.com/r/controversialopinion/comments/965r6d/i_think_you_mean_this_sub/ )
 r/unpopularopinion...
 
-Feature Names: ['banana' 'different' 'hello' 'orange' 'sentence']
-Bag of Words Representation:
- [[1 0 1 0 1]
- [0 1 0 1 1]]
 Accuracy: 91.38%
               precision    recall  f1-score   support
 

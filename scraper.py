@@ -8,6 +8,7 @@ import nltk
 from nltk.corpus import stopwords
 import re
 from datetime import datetime
+import reddit_keys
 
 
 # loading in client secrets
@@ -85,8 +86,8 @@ def clean_text(text):
 
 # opening reddit instance
 reddit = praw.Reddit(
-    client_id=os.getenv("CLIENT_ID"),
-    client_secret=os.getenv("CLIENT_SECRET"),
+    client_id=reddit_keys.CLIENT_ID,
+    client_secret=reddit_keys.CLIENT_SECRET,
     user_agent="My User",
 )
 
@@ -121,7 +122,7 @@ def get_data():
                 "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
                 "subreddit": submission.subreddit.display_name,
                 "cleaned_title": clean_text(submission.title),
-                "cleaned selftext": clean_text(submission.selftext),
+                "cleaned_selftext": clean_text(submission.selftext),
                 "num_comments": submission.num_comments,
                 "num_base_level_comments": len(submission.comments),
                 "score": submission.score, # upvotes - downvotes
@@ -159,7 +160,7 @@ def get_data():
                 "age": (datetime.now() - datetime.fromtimestamp(submission.created_utc)).days,
                 "subreddit": submission.subreddit.display_name,
                 "cleaned_title": clean_text(submission.title),
-                "cleaned selftext": clean_text(submission.selftext),
+                "cleaned_selftext": clean_text(submission.selftext),
                 "num_comments": submission.num_comments,
                 "num_base_level_comments": len(submission.comments),
                 "score": submission.score, # upvotes - downvotes

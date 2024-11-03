@@ -19,7 +19,7 @@ analyzer = SentimentIntensityAnalyzer()
 
 def get_sentiment(text):
     scores = analyzer.polarity_scores(text)
-    print(scores['compound'], ":")
+    # print(scores['compound'], ":")
     if scores['compound'] >= 0.3:      # TODO: tweak these values as necessary
         return 1  # Positive
     elif scores['compound'] <= -0.3:
@@ -36,7 +36,7 @@ with open('tdata.json') as f:
 for post in reddit_data:
     text = post['cleaned_title'] + " " + post['cleaned_selftext']
     post['label'] = get_sentiment(text)
-    print(post['original_title'] + " (link: ", post["url"], ")\n" + post['original_selftext'][:200] + "...\n")
+    # print(post['original_title'] + " (link: ", post["url"], ")\n" + post['original_selftext'][:200] + "...\n")
 
 """Now that we have labeled data, we can split our data into test and training sets, and start training our model."""
 
