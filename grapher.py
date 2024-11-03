@@ -37,7 +37,19 @@ plt.axvline(x=0.0, color='red', linestyle='--', label='x = 0')
 # Add horizontal dividing lines at specific y-values
 plt.axhline(y=0.5, color='red', linestyle='--', label='y = 0.5')
 
-plt.scatter(sentiment, updownratio, color='blue', label='Sentiment vs. Ratio')
+# Color-coded scatter plot based on sentiment
+colors = ['green' if s > 0.05 else 'red' if s < -0.05 else 'gray' for s in sentiment]
+plt.scatter(sentiment, updownratio, color=colors, alpha=0.6, label='Sentiment vs. Ratio')
+
+# Add quadrant labels with adjusted positions and background color
+plt.text(0.35, 0.85, 'Positive Engagement', color='green', fontsize=10, ha='center', 
+         bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
+plt.text(-0.35, 0.85, 'Controversial/Interesting', color='orange', fontsize=10, ha='center', 
+         bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
+plt.text(0.35, 0.15, 'Positive but Less Engaging', color='blue', fontsize=10, ha='center', 
+         bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
+plt.text(-0.35, 0.15, 'Negative Engagement', color='red', fontsize=10, ha='center', 
+         bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
 plt.xlabel('Sentiment Score')
 plt.ylabel('Upvote/Downvote Ratio')
