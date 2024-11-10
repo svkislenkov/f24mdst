@@ -3,16 +3,16 @@ from praw.models import MoreComments
 import json
 import pprint
 import os
-from dotenv import load_dotenv, dotenv_values
+#from dotenv import load_dotenv, dotenv_values
 import nltk
 from nltk.corpus import stopwords
 import re
 from datetime import datetime
-import reddit_keys
+#import reddit_keys
 
 
 # loading in client secrets
-load_dotenv()
+#load_dotenv()
 
 # used to expand contractions
 CONTRACTIONS = {
@@ -86,8 +86,8 @@ def clean_text(text):
 
 # opening reddit instance
 reddit = praw.Reddit(
-    client_id=reddit_keys.CLIENT_ID,
-    client_secret=reddit_keys.CLIENT_SECRET,
+    client_id="4DBXk6s_a9WVVIIaxxFd_g",
+    client_secret="rg_aSbGFqblR7KVPMKC-b2sx5XgIqQ",
     user_agent="My User",
 )
 
