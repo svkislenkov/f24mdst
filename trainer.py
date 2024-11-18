@@ -1,65 +1,69 @@
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LinearRegression
-import numpy as np
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-
-# Create sentiment analyzer
-analyzer = SentimentIntensityAnalyzer()
-
-# Get text, upvote/downvote ratio from posts
 import json
-with open('tdata.json') as f:
-    reddit_data = json.load(f)
+import pandas as pd
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import sys
+import numpy as np
 
-X_text = []
-X_sentiment = []
-y_updown = []
+def train_model():
+    # Step 1: Load Data
+    with open("tdata.json", "r") as file:
+        data = json.load(file)
 
-for post in reddit_data:
-    text = post['cleaned_title'] + " " + post['cleaned_selftext']
-    # Get sentiment from posts
-    X_text.append(text)
-    sent = ((analyzer.polarity_scores(text)['compound'] + 1) / 2)
-    X_sentiment.append(sent)
-    y_updown.append(post['upvote_ratio'])
+    # Convert to DataFrame
+    df = pd.DataFrame(data)
 
-# Combine text, upvote/downvote, and sentiment into model
+    # Step 2: Sentiment Analysis
+    analyzer = SentimentIntensityAnalyzer()
+    df['sentiment_score'] = df['cleaned_selftext'].apply(
+        lambda x: analyzer.polarity_scores(x)['compound']
+    )
 
-# Train model
+    # Step 3: Prepare Features and Target
+    features = df[['sentiment_score']]
+    target = df['upvote_ratio']
+
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
+
+    # Step 4: Train Model
+    model = RandomForestRegressor(random_state=42)
+    model.fit(X_train, y_train)
+
+    # Step 5: Evaluate Model
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    print(f"Mean Squared Error: {mse}")
     
-# Text vectorization
-tfidf = TfidfVectorizer(max_features=5000)
-X_text_vec = tfidf.fit_transform(X_text).toarray()
+    return model, analyzer
 
-# Combine text features and sentiment
-X = np.hstack((X_text_vec, np.array(X_sentiment).reshape(-1, 1)))
-y = np.array(y_updown)
+def predict_opinion(user_text):
+    try:
+        # Train model and get analyzer
+        model, analyzer = train_model()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        # Process User Input
+        user_sentiment_score = analyzer.polarity_scores(user_text)['compound']
+        user_features = pd.DataFrame({
+            'sentiment_score': [user_sentiment_score],
+        })
 
-# Model training
-model = LinearRegression()
-model.fit(X_train, y_train)
+        # Predict upvote ratio and clip between 0 and 1
+        predicted_ratio = model.predict(user_features)[0]
+        predicted_ratio = np.clip(predicted_ratio, 0, 1)
+        return predicted_ratio
 
-# Evaluation
-score = model.score(X_test, y_test)
-print(f"Model R^2 score: {score}")
+    except Exception as e:
+        print(f"Error in prediction process: {str(e)}")
+        return 0.5
 
-# Prompt for user input
-
-user_text = input(f"Enter your unpopular opinion: ")
-# Calculate sentiment based on user input
-user_sentiment = ((analyzer.polarity_scores(user_text)['compound'] + 1) / 2)
-
-# Preprocess text
-user_text_vec = tfidf.transform([user_text]).toarray()
-user_input = np.hstack((user_text_vec, [[user_sentiment]]))
-
-# Predict ratio
-predicted_ratio = model.predict(user_input)
-print(f"Predicted Upvote/Downvote Ratio: {predicted_ratio[0]:.2f}")
-# Throw sentiment and user input into model
-
-# Output predicted up/down ratio
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        user_text = sys.argv[1]
+        ratio = predict_opinion(user_text)
+        print(f"Predicted Upvote/Downvote Ratio: {ratio}")
+    else:
+        print("No input text provided")
 
