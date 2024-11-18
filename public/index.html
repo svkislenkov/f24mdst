@@ -3,122 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unpopular Opinion Analyzer with Persistent Leaderboard</title>
+    <title>Unpopular Opinion Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f39c12;
-            --background-color: #f0f4f8;
+            --primary-color: #6d28d9;
+            --primary-light: #8b5cf6;
+            --secondary-color: #10b981;
+            --background-color: #f3f4f6;
             --card-background: #ffffff;
-            --text-color: #333333;
-            --border-radius: 12px;
+            --text-color: #1f2937;
+            --border-radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: var(--background-color);
-            padding: 20px;
-            box-sizing: border-box;
-            color: var(--text-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(109, 40, 217, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 20%);
+            background-attachment: fixed;
         }
         .container {
-            display: flex;
-            gap: 30px;
-            max-width: 1200px;
-            width: 100%;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1400px;
+            width: 90%;
+            padding: 3rem;
+            box-sizing: border-box;
         }
         .card {
             background-color: var(--card-background);
             border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            flex: 1;
-            min-width: 300px;
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(109, 40, 217, 0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+            z-index: 0;
+        }
+        .card > * {
+            position: relative;
+            z-index: 1;
         }
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.2);
         }
         h1 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
             color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background-color: var(--secondary-color);
+            transition: var(--transition);
+        }
+        .card:hover h1::after {
+            width: 100%;
         }
         p {
-            font-size: 1em;
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            font-size: 1.1rem;
+            color: #4b5563;
+            margin-bottom: 2rem;
+            line-height: 1.6;
         }
         input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            box-sizing: border-box;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
+            width: calc(100% - 3rem); /* Account for padding */
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: #f9fafb;
+            box-sizing: border-box; /* Add this to include padding in width calculation */
         }
         input[type="text"]:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+            background-color: #ffffff;
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 1rem 1.5rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transition: var(--transition);
+            z-index: 0;
+            transform: translate(-50%, -50%) scale(0);
+        }
+        button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
         }
         button:hover {
-            background-color: #3a7bd5;
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
         }
         #result {
-            margin-top: 20px;
-            font-weight: bold;
+            margin-top: 2rem;
+            font-weight: 600;
             text-align: center;
-            font-size: 1.2em;
+            font-size: 1.3rem;
             color: var(--secondary-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        #result.show {
+            opacity: 1;
+            transform: translateY(0);
         }
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 10px;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
+            border-spacing: 0;
+            margin-top: 1.5rem;
         }
         th {
             background-color: var(--primary-color);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.9rem;
         }
-        tr {
-            background-color: #f9f9f9;
-            transition: background-color 0.3s ease;
+        th:first-child {
+            border-top-left-radius: 12px;
         }
-        tr:hover {
-            background-color: #f0f0f0;
+        th:last-child {
+            border-top-right-radius: 12px;
+        }
+        td {
+            padding: 1rem 1.5rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+        tbody tr {
+            background-color: #ffffff;
+            transition: var(--transition);
+        }
+        tbody tr:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        td:nth-child(1) {  /* Name column */
+            font-weight: 600;
+            color: var(--primary-color);
+            width: 20%;
+        }
+        td:nth-child(2) {  /* Opinion column */
+            width: 60%;
+            line-height: 1.5;
+        }
+        td:nth-child(3) {  /* Upvote ratio column */
+            width: 20%;
+            text-align: center;
+            font-weight: 600;
+            color: var(--secondary-color);
         }
         .fade-in {
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
         }
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -126,10 +248,10 @@
     <div class="container">
         <div class="card">
             <h1>Unpopular Opinion Analyzer</h1>
-            <p>Share your unpopular opinion and see how it ranks!</p>
-            <input type="text" id="nameInput" placeholder="Enter your name" aria-label="Your name">
-            <textarea id="opinionInput" placeholder="Enter your unpopular opinion..." rows="4" aria-label="Your unpopular opinion"></textarea>
-            <button onclick="analyzeOpinion()">Analyze Opinion</button>
+            <p>Dare to share your most controversial thoughts and see how they measure up!</p>
+            <input type="text" id="nameInput" placeholder="Your name (or alias)" aria-label="Your name">
+            <textarea id="opinionInput" placeholder="Type your unpopular opinion here..." rows="4" aria-label="Your unpopular opinion"></textarea>
+            <button onclick="analyzeOpinion()">Analyze My Opinion</button>
             <div id="result" aria-live="polite"></div>
         </div>
         <div class="card">
@@ -138,7 +260,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Opinion</th>
+                        <th>Hot Take</th>
                         <th>Upvote Ratio</th>
                     </tr>
                 </thead>
@@ -152,23 +274,20 @@
     <script>
         let leaderboard = [];
 
-        // Load leaderboard from both localStorage and server on page load
         document.addEventListener('DOMContentLoaded', async () => {
-            // First load from localStorage
             const savedLeaderboard = localStorage.getItem('opinionLeaderboard');
             if (savedLeaderboard) {
                 leaderboard = JSON.parse(savedLeaderboard);
                 updateLeaderboard();
             }
 
-            // Then try to load from server
             try {
                 const response = await fetch('/api/leaderboard');
                 const serverLeaderboard = await response.json();
                 if (serverLeaderboard.length > 0) {
                     leaderboard = serverLeaderboard;
                     updateLeaderboard();
-                    saveLeaderboard(); // Update localStorage with server data
+                    saveLeaderboard();
                 }
             } catch (error) {
                 console.error('Failed to load leaderboard from server:', error);
@@ -178,9 +297,11 @@
         async function analyzeOpinion() {
             const name = document.getElementById('nameInput').value.trim();
             const opinion = document.getElementById('opinionInput').value.trim();
+            const resultElement = document.getElementById('result');
             
             if (name && opinion) {
-                document.getElementById('result').textContent = 'Analyzing...';
+                resultElement.textContent = 'Analyzing...';
+                resultElement.classList.add('show');
                 
                 try {
                     const response = await fetch('/api/opinions', {
@@ -197,18 +318,19 @@
                     }
                     
                     const data = await response.json();
-                    document.getElementById('result').textContent = `Predicted Ratio: ${data.upvoteRatio}`;
+                    resultElement.textContent = `Controversy Score: ${data.upvoteRatio}`;
+                    resultElement.classList.add('show');
                     
                     leaderboard = data.leaderboard;
                     updateLeaderboard();
                     saveLeaderboard();
 
-                    // Clear inputs
                     document.getElementById('nameInput').value = '';
                     document.getElementById('opinionInput').value = '';
                 } catch (error) {
                     console.error('Failed to submit opinion:', error);
-                    document.getElementById('result').textContent = `Error: ${error.message}`;
+                    resultElement.textContent = `Error: ${error.message}`;
+                    resultElement.classList.add('show');
                 }
             } else {
                 alert('Please enter both your name and opinion.');
@@ -232,7 +354,6 @@
             localStorage.setItem('opinionLeaderboard', JSON.stringify(leaderboard));
         }
 
-        // Add this new function to list entries with IDs
         function listEntries() {
             console.log('Current leaderboard entries:');
             console.table(leaderboard.map(entry => ({
@@ -245,7 +366,7 @@
 
         async function deleteEntry(id) {
             try {
-                console.log('Attempting to delete entry:', id); // Add this for debugging
+                console.log('Attempting to delete entry:', id);
                 const response = await fetch(`/api/entries/${id}`, {
                     method: 'DELETE',
                     headers: {
